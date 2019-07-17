@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="npm,javascript,">
+  <meta name="keywords" content="Java,">
 
 
 
@@ -79,18 +79,22 @@
 
 
 
-<meta name="description" content="这篇文章描述了 npm 打包并发布独立组件的方式    标签：#npm, #javascript">
-<meta name="keywords" content="npm,javascript">
+<meta name="description" content="What？Java中1000 != 1000，100 == 100，3 + 3 = 12?      标签：#Java">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="NPM发布独立组件">
-<meta property="og:url" content="http://yoursite.com/2019/07/17/npm发布独立组件/index.html">
+<meta property="og:title" content="Java小知识">
+<meta property="og:url" content="http://yoursite.com/2016/10/25/java小知识/index.html">
 <meta property="og:site_name" content="吴林的博客">
-<meta property="og:description" content="这篇文章描述了 npm 打包并发布独立组件的方式    标签：#npm, #javascript">
+<meta property="og:description" content="What？Java中1000 != 1000，100 == 100，3 + 3 = 12?      标签：#Java">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-17T13:25:42.830Z">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYxMDI1MTE1NTU0MjIy">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYxMDI1MTIwMDE3MjEy">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYxMDI1MTIxMDU5MTAx">
+<meta property="og:updated_time" content="2019-07-17T14:03:06.361Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="NPM发布独立组件">
-<meta name="twitter:description" content="这篇文章描述了 npm 打包并发布独立组件的方式    标签：#npm, #javascript">
+<meta name="twitter:title" content="Java小知识">
+<meta name="twitter:description" content="What？Java中1000 != 1000，100 == 100，3 + 3 = 12?      标签：#Java">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYxMDI1MTE1NTU0MjIy">
 
 
 
@@ -120,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/07/17/npm发布独立组件/">
+  <link rel="canonical" href="http://yoursite.com/2016/10/25/java小知识/">
 
 
 
 
 
-  <title>NPM发布独立组件 | 吴林的博客</title>
+  <title>Java小知识 | 吴林的博客</title>
   
 
 
@@ -243,7 +247,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/17/npm发布独立组件/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/25/java小知识/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Wu.lin">
@@ -260,7 +264,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">NPM发布独立组件</h1>
+          <h1 class="post-title" itemprop="name headline">Java小知识</h1>
         
 
         <div class="post-meta">
@@ -272,8 +276,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-17T14:43:00+08:00">
-                2019-07-17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-25T11:49:41+08:00">
+                2016-10-25
               </time>
             
 
@@ -311,14 +315,42 @@
 
       
         <center>
-这篇文章描述了 npm 打包并发布独立组件的方式
+  What？Java中1000 != 1000，100 == 100，3 + 3 = 12?
 <center>
 <br>
 </center>
-标签：#npm, #javascript
+  标签：#Java
 </center>
 
 <a id="more"></a>
+
+<p>不得不说，这是一个很有趣的知识点。如果运行下面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Integer a = 1000, b = 1000;</span><br><span class="line">      System.out.println(a == b);</span><br><span class="line"></span><br><span class="line">      Integer c = 100, d = 100;</span><br><span class="line">      System.out.println(c == d);</span><br></pre></td></tr></table></figure>
+
+<p>你会得到一个非常有趣的结果：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYxMDI1MTE1NTU0MjIy" alt="这里写图片描述"></p>
+<p>结果出乎意料吧，我们知道，Java 在比较两个对象的时候是比较他们的引用，就是说如果两个对象的引用相同，那他们的==结果才是 true，按照这个思路想，上面的代码都应该是 false 才对。</p>
+<p>这就是它有趣的地方了。如果你看去看 Integer.Java 类，你会发现有一个内部私有类，IntegerCache.java，它缓存了从-128 到 127 之间的所有的整数对象。<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYxMDI1MTIwMDE3MjEy" alt="这里写图片描述"></p>
+<p>当我们创建 Integer 对象的时候</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Integer a = 100;</span><br></pre></td></tr></table></figure>
+
+<p>其实内部的操作是下面这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Integer a = Integer.valueOf(100);</span><br></pre></td></tr></table></figure>
+
+<p>然后再看 valueOf()方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">    * Returns an &#123;@code Integer&#125; instance representing the specified</span><br><span class="line">    * &#123;@code int&#125; value.  If a new &#123;@code Integer&#125; instance is not</span><br><span class="line">    * required, this method should generally be used in preference to</span><br><span class="line">    * the constructor &#123;@link #Integer(int)&#125;, as this method is likely</span><br><span class="line">    * to yield significantly better space and time performance by</span><br><span class="line">    * caching frequently requested values.</span><br><span class="line">    *</span><br><span class="line">    * This method will always cache values in the range -128 to 127,</span><br><span class="line">    * inclusive, and may cache other values outside of this range.</span><br><span class="line">    *</span><br><span class="line">    * @param  i an &#123;@code int&#125; value.</span><br><span class="line">    * @return an &#123;@code Integer&#125; instance representing &#123;@code i&#125;.</span><br><span class="line">    * @since  1.5</span><br><span class="line">    */</span><br><span class="line">   public static Integer valueOf(int i) &#123;</span><br><span class="line">       assert IntegerCache.high &gt;= 127;</span><br><span class="line">       if (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)</span><br><span class="line">           return IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">       return new Integer(i);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>看看注释大致就明白了。如果值在-128 到 127 之间，就从缓存里面取值，这样两次得到的是同一个实例，因此上面的 100 == 100.</p>
+<p>现在你可能会问，为什么这里需要缓存？</p>
+<p>合乎逻辑的理由是，在此范围内的“小”整数使用率比大整数要高，因此，使用相同的底层对象是有价值的，可以减少潜在的内存占用。</p>
+<p>下面，我们通过反射去修改这个内部缓存类中的数组，会得到题目中说的 3 + 3 = 12。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) throws NoSuchFieldException,IllegalAccessException  &#123;</span><br><span class="line"></span><br><span class="line">        Class cache = Integer.class.getDeclaredClasses()[0]; //得到IntegerCache类</span><br><span class="line">        Field myCache = cache.getDeclaredField(&quot;cache&quot;);    //     得到cache数组对象</span><br><span class="line">        myCache.setAccessible(true);                        //将数组对象的可访问性设置为false</span><br><span class="line">        Integer[] newCache = (Integer[]) myCache.get(cache); //返回IntegerCache对象上&quot;myCache&quot;表示的字段的值([-128~127])</span><br><span class="line"></span><br><span class="line">        newCache[134] = newCache[140]; //6 = 12</span><br><span class="line"></span><br><span class="line">        Integer s = 6;</span><br><span class="line">        System.out.println(s);</span><br><span class="line"></span><br><span class="line">        Integer a = 3;</span><br><span class="line">        Integer b = a + a;</span><br><span class="line">        System.out.println(b);</span><br><span class="line"></span><br><span class="line">        int c = 3;</span><br><span class="line">        int d = c + c;</span><br><span class="line">        System.out.printf(&quot;%d + %d = %d&quot;, c, c, d);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面就是我们要的结果：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTYxMDI1MTIxMDU5MTAx" alt="这里写图片描述"></p>
+<p>相信注释已经写的很明确了，快去自己的环境上试试吧！</p>
+<p style="text-align: center;"><span style="font-size:18px;"><strong><span style="color:#ff00;"><span style="color:#ff0000;">友情提示：</span></span>请尊重作者劳动成果，如需转载本博客文章请注明出处！谢谢合作！</strong></span></p>
+
+<p align="center"><strong><span style="font-size:18px;">【作者：吴林&nbsp;&nbsp;</span></strong><a target="_blank" href="https://super-lin0.github.io/"><strong><span style="font-size:18px;">https://super-lin0.github.io/</span></strong></a><strong>】</strong></p>
 
       
     </div>
@@ -336,9 +368,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/npm/" rel="tag"># npm</a>
-          
-            <a href="/tags/javascript/" rel="tag"># javascript</a>
+            <a href="/tags/Java/" rel="tag"># Java</a>
           
         </div>
       
@@ -351,8 +381,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/11/13/Javascript之Tab页签切换/" rel="next" title="Javascript之Tab页签切换">
-                <i class="fa fa-chevron-left"></i> Javascript之Tab页签切换
+              <a href="/2016/10/08/JavaScript中数组元素删除的七大方法汇总/" rel="next" title="JavaScript中数组元素删除的七大方法汇总">
+                <i class="fa fa-chevron-left"></i> JavaScript中数组元素删除的七大方法汇总
               </a>
             
           </div>
@@ -361,8 +391,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/17/hexo+GithubPage搭建个人博客/" rel="prev" title="Hexo+GitHub Pages搭建个人博客">
-                Hexo+GitHub Pages搭建个人博客 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/10/25/如何用IDEA一步一步开发WebService服务器端/" rel="prev" title="如何用IDEA一步一步开发WebService服务器端">
+                如何用IDEA一步一步开发WebService服务器端 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
