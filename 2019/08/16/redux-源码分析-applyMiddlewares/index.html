@@ -82,14 +82,14 @@
 <meta name="description" content="本文根据Redux 4.0.1版本来分析 applyMiddleware 源代码      标签：#Redux, #Source code analysis">
 <meta name="keywords" content="Redux,Source code analysis">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Redux源码系列--applyMiddleware">
+<meta property="og:title" content="Redux源码系列三--applyMiddleware">
 <meta property="og:url" content="http://yoursite.com/2019/08/16/redux-源码分析-applyMiddlewares/index.html">
 <meta property="og:site_name" content="吴林的博客">
 <meta property="og:description" content="本文根据Redux 4.0.1版本来分析 applyMiddleware 源代码      标签：#Redux, #Source code analysis">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-16T11:41:08.625Z">
+<meta property="og:updated_time" content="2019-08-16T11:45:02.177Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redux源码系列--applyMiddleware">
+<meta name="twitter:title" content="Redux源码系列三--applyMiddleware">
 <meta name="twitter:description" content="本文根据Redux 4.0.1版本来分析 applyMiddleware 源代码      标签：#Redux, #Source code analysis">
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>Redux源码系列--applyMiddleware | 吴林的博客</title>
+  <title>Redux源码系列三--applyMiddleware | 吴林的博客</title>
   
 
 
@@ -260,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Redux源码系列--applyMiddleware</h1>
+          <h1 class="post-title" itemprop="name headline">Redux源码系列三--applyMiddleware</h1>
         
 
         <div class="post-meta">
@@ -272,7 +272,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-16T19:12:16+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-16T19:43:16+08:00">
                 2019-08-16
               </time>
             
@@ -324,7 +324,7 @@
 
 <h3 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">import compose from &apos;./compose&apos;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * applyMiddleware是将各个需要应用的中间件串联起来，将最原始的store.dispatch作为参数传入</span><br><span class="line"> * 组合后的中间件链中。</span><br><span class="line"> *</span><br><span class="line"> * 组合：把一个函数的输出作为输入发送给另一个函数的方式</span><br><span class="line"> * Creates a store enhancer that applies middleware to the dispatch method</span><br><span class="line"> * of the Redux store. This is handy for a variety of tasks, such as expressing</span><br><span class="line"> * asynchronous actions in a concise manner, or logging every action payload.</span><br><span class="line"> *</span><br><span class="line"> * See `redux-thunk` package as an example of the Redux middleware.</span><br><span class="line"> *</span><br><span class="line"> * Because middleware is potentially asynchronous, this should be the first</span><br><span class="line"> * store enhancer in the composition chain.</span><br><span class="line"> *</span><br><span class="line"> * Note that each middleware will be given the `dispatch` and `getState` functions</span><br><span class="line"> * as named arguments.</span><br><span class="line"> *</span><br><span class="line"> * 中间件：位于action被派发之后，到达reducer之前的扩展</span><br><span class="line"> * @param &#123;...Function&#125; middlewares The middleware chain to be applied.</span><br><span class="line"> * @returns &#123;Function&#125; A store enhancer applying the middleware.</span><br><span class="line"> */</span><br><span class="line">export default function applyMiddleware(...middlewares) &#123;</span><br><span class="line">  return createStore =&gt; (...args) =&gt; &#123;</span><br><span class="line">    // 相当于</span><br><span class="line">    // applyMiddleware(...middlewares)(createStore)(reducer, initState)</span><br><span class="line">    // 借用原始的 createStore 方法，创建一个新的增强版的 store</span><br><span class="line">    const store = createStore(...args)</span><br><span class="line">    let dispatch = () =&gt; &#123;</span><br><span class="line">      throw new Error(</span><br><span class="line">        &apos;Dispatching while constructing your middleware is not allowed. &apos; +</span><br><span class="line">          &apos;Other middleware would not be applied to this dispatch.&apos;</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 第三方中间件需要使用的参数，即原始的store.getState和dispatch方法</span><br><span class="line">    const middlewareAPI = &#123;</span><br><span class="line">      getState: store.getState,</span><br><span class="line">      dispatch: (...args) =&gt; dispatch(...args)</span><br><span class="line">    &#125;</span><br><span class="line">    // 针对每个中间件传入state，dispatch，倒序执行</span><br><span class="line">    const chain = middlewares.map(middleware =&gt; middleware(middlewareAPI))</span><br><span class="line">    // compose(f, g, h)(store.dispatch) 等价于  f(g(h(store.dispatch)))</span><br><span class="line">    dispatch = compose(...chain)(store.dispatch)</span><br><span class="line"></span><br><span class="line">    return &#123;</span><br><span class="line">      ...store,</span><br><span class="line">      dispatch</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h3><p>1、</p><p style="text-align: left"><a href="https://github.com/ecmadao/Coding-Guide/blob/master/Notes/React/Redux/Redux%E5%85%A5%E5%9D%91%E8%BF%9B%E9%98%B6-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90.md#createstore" target="_blank" rel="noopener">https://github.com/ecmadao/Coding-Guide/blob/master/Notes/React/Redux/Redux%E5%85%A5%E5%9D%91%E8%BF%9B%E9%98%B6-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90.md#createstore</a></p><p></p>
+<h3 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h3><p>1、Redux: </p><p style="text-align: left"><a href="https://github.com/ecmadao/Coding-Guide/blob/master/Notes/React/Redux/Redux%E5%85%A5%E5%9D%91%E8%BF%9B%E9%98%B6-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90.md#createstore" target="_blank" rel="noopener">https://github.com/ecmadao/Coding-Guide/blob/master/Notes/React/Redux/Redux%E5%85%A5%E5%9D%91%E8%BF%9B%E9%98%B6-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90.md#createstore</a></p><p></p>
 <p>2、《React 状态管理与同构实战》</p>
 <p>3、<a href="http://cn.redux.js.org/docs/api/createStore.html" target="_blank" rel="noopener">http://cn.redux.js.org/docs/api/createStore.html</a></p>
 <p>4、函数式编程-组合：<a href="https://github.com/super-lin0/functional-es6/tree/master/src/chapter-07" target="_blank" rel="noopener">https://github.com/super-lin0/functional-es6/tree/master/src/chapter-07</a></p>
@@ -363,8 +363,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/16/redux-源码分析-combineReducers/" rel="next" title="Redux源码系列--CombineReducers">
-                <i class="fa fa-chevron-left"></i> Redux源码系列--CombineReducers
+              <a href="/2019/08/16/redux-源码分析-combineReducers/" rel="next" title="Redux源码系列二--combineReducers">
+                <i class="fa fa-chevron-left"></i> Redux源码系列二--combineReducers
               </a>
             
           </div>
