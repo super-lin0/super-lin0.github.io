@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Redux,Source code analysis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文根据Redux 4.0.1版本来分析createStore源代码      标签：#Redux, #Source code analysis">
+<meta name="keywords" content="Redux,Source code analysis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redux源码分析之-createStore">
+<meta property="og:url" content="http://yoursite.com/2019/08/16/redux-源码分析-createStore/index.html">
+<meta property="og:site_name" content="吴林的博客">
+<meta property="og:description" content="本文根据Redux 4.0.1版本来分析createStore源代码      标签：#Redux, #Source code analysis">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-16T08:03:27.601Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redux源码分析之-createStore">
+<meta name="twitter:description" content="本文根据Redux 4.0.1版本来分析createStore源代码      标签：#Redux, #Source code analysis">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/08/16/redux-源码分析-createStore/">
+
+
+
+
+
+  <title>Redux源码分析之-createStore | 吴林的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">吴林的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/16/redux-源码分析-createStore/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wu.lin">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="吴林的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redux源码分析之-createStore</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-16T15:39:16+08:00">
+                2019-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <center>
+  本文根据Redux 4.0.1版本来分析createStore源代码
+<center>
+<br>
+</center>
+  标签：#Redux, #Source code analysis
+</center>
+
+<a id="more"></a>
+
+<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import &#123; createStore, combineReducers, applyMiddleware, compose &#125; from &quot;redux&quot;;</span><br><span class="line"></span><br><span class="line">import thunkMiddleware from &quot;redux-thunk&quot;;</span><br><span class="line"></span><br><span class="line">import &#123; reducer as weatherReducer &#125; from &quot;./weather/&quot;;</span><br><span class="line"></span><br><span class="line">const reducer = combineReducers(&#123;</span><br><span class="line">  weather: weatherReducer</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">const middlewares = [thunkMiddleware];</span><br><span class="line"></span><br><span class="line">const storeEnhancers = compose(applyMiddleware(...middlewares));</span><br><span class="line"></span><br><span class="line">export default createStore(reducer, &#123;&#125;, storeEnhancers);</span><br></pre></td></tr></table></figure>
+
+<h3 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 创建一个Redux store用来存储状态树</span><br><span class="line"> * Creates a Redux store that holds the state tree.</span><br><span class="line"> *</span><br><span class="line"> * State只读原则: 不能够直接改变state值，只能够通过 `dispatch`方法来更改store状态树</span><br><span class="line"> * The only way to change the data in the store is to call `dispatch()` on it.</span><br><span class="line"> *</span><br><span class="line"> * 数据来源单一原则：整个应用中只有一个store，可以通过`combineReducers`方法来将多个reducers</span><br><span class="line"> * 结合成一个单一的reducer</span><br><span class="line"> * There should only be a single store in your app. To specify how different</span><br><span class="line"> * parts of the state tree respond to actions, you may combine several reducers</span><br><span class="line"> * into a single reducer function by using `combineReducers`.</span><br><span class="line"> *</span><br><span class="line"> * reducer(必填参数)：通过previousState和当前action返回一个新的状态数据树</span><br><span class="line"> * @param &#123;Function&#125; reducer A function that returns the next state tree, given</span><br><span class="line"> * the current state tree and the action to handle.</span><br><span class="line"> *</span><br><span class="line"> * 容器初始状态(可选参数)</span><br><span class="line"> * @param &#123;any&#125; [preloadedState] The initial state. You may optionally specify it</span><br><span class="line"> * to hydrate the state from the server in universal apps, or to restore a</span><br><span class="line"> * previously serialized user session.</span><br><span class="line"> * If you use `combineReducers` to produce the root reducer function, this must be</span><br><span class="line"> * an object with the same shape as `combineReducers` keys.</span><br><span class="line"> *</span><br><span class="line"> * enhancer增强器：</span><br><span class="line"> * @param &#123;Function&#125; [enhancer] The store enhancer. You may optionally specify it</span><br><span class="line"> * to enhance the store with third-party capabilities such as middleware,</span><br><span class="line"> * time travel, persistence, etc. The only store enhancer that ships with Redux</span><br><span class="line"> * is `applyMiddleware()`.</span><br><span class="line"> *</span><br><span class="line"> * @returns &#123;Store&#125; A Redux store that lets you read the state, dispatch actions</span><br><span class="line"> * and subscribe to changes.</span><br><span class="line"> */</span><br><span class="line">export default function createStore(reducer, preloadedState, enhancer) &#123;</span><br><span class="line">  // 不支持传入多个enhancer的情况</span><br><span class="line">  if (</span><br><span class="line">    (typeof preloadedState === &apos;function&apos; &amp;&amp; typeof enhancer === &apos;function&apos;) ||</span><br><span class="line">    (typeof enhancer === &apos;function&apos; &amp;&amp; typeof arguments[3] === &apos;function&apos;)</span><br><span class="line">  ) &#123;</span><br><span class="line">    throw new Error(</span><br><span class="line">      &apos;It looks like you are passing several store enhancers to &apos; +</span><br><span class="line">        &apos;createStore(). This is not supported. Instead, compose them &apos; +</span><br><span class="line">        &apos;together to a single function.&apos;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  // 如果第二个参数传入一个函数，则将第二个参数作为enhancer，初始状态置为undefined</span><br><span class="line">  if (typeof preloadedState === &apos;function&apos; &amp;&amp; typeof enhancer === &apos;undefined&apos;) &#123;</span><br><span class="line">    enhancer = preloadedState</span><br><span class="line">    preloadedState = undefined</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if (typeof enhancer !== &apos;undefined&apos;) &#123;</span><br><span class="line">    if (typeof enhancer !== &apos;function&apos;) &#123;</span><br><span class="line">      throw new Error(&apos;Expected the enhancer to be a function.&apos;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 如果传入enhancer合法，则通过enhancer再次调用createStore</span><br><span class="line">    return enhancer(createStore)(reducer, preloadedState)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if (typeof reducer !== &apos;function&apos;) &#123;</span><br><span class="line">    throw new Error(&apos;Expected the reducer to be a function.&apos;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  let currentReducer = reducer</span><br><span class="line">  let currentState = preloadedState</span><br><span class="line">  let currentListeners = [] // 用来存储所有的监听函数</span><br><span class="line">  let nextListeners = currentListeners</span><br><span class="line">  let isDispatching = false // 是否正在派发事件</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * This makes a shallow copy of currentListeners so we can use</span><br><span class="line">   * nextListeners as a temporary list while dispatching.</span><br><span class="line">   *</span><br><span class="line">   * This prevents any bugs around consumers calling</span><br><span class="line">   * subscribe/unsubscribe in the middle of a dispatch.</span><br><span class="line">   */</span><br><span class="line">  function ensureCanMutateNextListeners() &#123;</span><br><span class="line">    if (nextListeners === currentListeners) &#123;</span><br><span class="line">      nextListeners = currentListeners.slice()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * Reads the state tree managed by the store.</span><br><span class="line">   *  用来返回应用当前的页面数据状态树</span><br><span class="line">   * @returns &#123;any&#125; The current state tree of your application.</span><br><span class="line">   */</span><br><span class="line">  function getState() &#123;</span><br><span class="line">    if (isDispatching) &#123;</span><br><span class="line">      throw new Error(</span><br><span class="line">        &apos;You may not call store.getState() while the reducer is executing. &apos; +</span><br><span class="line">          &apos;The reducer has already received the state as an argument. &apos; +</span><br><span class="line">          &apos;Pass it down from the top reducer instead of reading it from the store.&apos;</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return currentState</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * 订阅store变化: 注册每一次数据更新后的回调逻辑，这种回调逻辑往往是页面渲染，在回调逻辑中，使用store.getState()</span><br><span class="line">   * 获取最新数据</span><br><span class="line">   * Adds a change listener. It will be called any time an action is dispatched,</span><br><span class="line">   * and some part of the state tree may potentially have changed. You may then</span><br><span class="line">   * call `getState()` to read the current state tree inside the callback.</span><br><span class="line">   *</span><br><span class="line">   * You may call `dispatch()` from a change listener, with the following</span><br><span class="line">   * caveats:</span><br><span class="line">   *</span><br><span class="line">   * 1. The subscriptions are snapshotted just before every `dispatch()` call.</span><br><span class="line">   * If you subscribe or unsubscribe while the listeners are being invoked, this</span><br><span class="line">   * will not have any effect on the `dispatch()` that is currently in progress.</span><br><span class="line">   * However, the next `dispatch()` call, whether nested or not, will use a more</span><br><span class="line">   * recent snapshot of the subscription list.</span><br><span class="line">   *</span><br><span class="line">   * 2. The listener should not expect to see all state changes, as the state</span><br><span class="line">   * might have been updated multiple times during a nested `dispatch()` before</span><br><span class="line">   * the listener is called. It is, however, guaranteed that all subscribers</span><br><span class="line">   * registered before the `dispatch()` started will be called with the latest</span><br><span class="line">   * state by the time it exits.</span><br><span class="line">   *</span><br><span class="line">   * @param &#123;Function&#125; listener A callback to be invoked on every dispatch.</span><br><span class="line">   * @returns &#123;Function&#125; A function to remove this change listener.</span><br><span class="line">   */</span><br><span class="line">  function subscribe(listener) &#123;</span><br><span class="line">    if (typeof listener !== &apos;function&apos;) &#123;</span><br><span class="line">      throw new Error(&apos;Expected the listener to be a function.&apos;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (isDispatching) &#123;</span><br><span class="line">      throw new Error(</span><br><span class="line">        &apos;You may not call store.subscribe() while the reducer is executing. &apos; +</span><br><span class="line">          &apos;If you would like to be notified after the store has been updated, subscribe from a &apos; +</span><br><span class="line">          &apos;component and invoke store.getState() in the callback to access the latest state. &apos; +</span><br><span class="line">          &apos;See https://redux.js.org/api-reference/store#subscribe(listener) for more details.&apos;</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    let isSubscribed = true</span><br><span class="line"></span><br><span class="line">    ensureCanMutateNextListeners() //防篡改</span><br><span class="line">    // subscribe可能会被调用多次，每一次调用时，都将相关的监听函数存入listeners数组中</span><br><span class="line">    nextListeners.push(listener)</span><br><span class="line"></span><br><span class="line">    // subscribe函数被调用后返回一个取消订阅的函数</span><br><span class="line">    return function unsubscribe() &#123;</span><br><span class="line">      if (!isSubscribed) &#123;</span><br><span class="line">        return</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      if (isDispatching) &#123;</span><br><span class="line">        throw new Error(</span><br><span class="line">          &apos;You may not unsubscribe from a store listener while the reducer is executing. &apos; +</span><br><span class="line">            &apos;See https://redux.js.org/api-reference/store#subscribe(listener) for more details.&apos;</span><br><span class="line">        )</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      isSubscribed = false</span><br><span class="line"></span><br><span class="line">      ensureCanMutateNextListeners()</span><br><span class="line">      // 取消订阅</span><br><span class="line">      const index = nextListeners.indexOf(listener)</span><br><span class="line">      nextListeners.splice(index, 1)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * 派发一个action，在Redux中，dispatch是唯一的改变state的方法</span><br><span class="line">   * Dispatches an action. It is the only way to trigger a state change.</span><br><span class="line">   *</span><br><span class="line">   * reducer函数，在Redux数据流里，reducer在具备初始状态的情况下，每一次运算其实都是根据</span><br><span class="line">   * 之前的状态(previous state)和现有的action来更新state的，这个state可以理解为上下文中</span><br><span class="line">   * 累加器的结果，作用类似于数组中的reduce方法</span><br><span class="line">   * The `reducer` function, used to create the store, will be called with the</span><br><span class="line">   * current state tree and the given `action`. Its return value will</span><br><span class="line">   * be considered the **next** state of the tree, and the change listeners</span><br><span class="line">   * will be notified.</span><br><span class="line">   *</span><br><span class="line">   * action必须是原生对象，如果想要派发一个Promise、Observable、thunk函数，或者其他任何形式，</span><br><span class="line">   * 需要将store创建函数包裹进相应的中间件，例如：redux-thunk</span><br><span class="line">   * The base implementation only supports plain object actions. If you want to</span><br><span class="line">   * dispatch a Promise, an Observable, a thunk, or something else, you need to</span><br><span class="line">   * wrap your store creating function into the corresponding middleware. For</span><br><span class="line">   * example, see the documentation for the `redux-thunk` package. Even the</span><br><span class="line">   * middleware will eventually dispatch plain object actions using this method.</span><br><span class="line">   *</span><br><span class="line">   * action 是一个对象，必须有一个type属性，且不能为`undefined`,描述了一种变化，并携带这种变化的数据信息</span><br><span class="line">   * @param &#123;Object&#125; action A plain object representing “what changed”. It is</span><br><span class="line">   * a good idea to keep actions serializable so you can record and replay user</span><br><span class="line">   * sessions, or use the time travelling `redux-devtools`. An action must have</span><br><span class="line">   * a `type` property which may not be `undefined`. It is a good idea to use</span><br><span class="line">   * string constants for action types.</span><br><span class="line">   *</span><br><span class="line">   * @returns &#123;Object&#125; For convenience, the same action object you dispatched.</span><br><span class="line">   *</span><br><span class="line">   * Note that, if you use a custom middleware, it may wrap `dispatch()` to</span><br><span class="line">   * return something else (for example, a Promise you can await).</span><br><span class="line">   */</span><br><span class="line">  function dispatch(action) &#123;</span><br><span class="line">    // 检查是否是原生对象</span><br><span class="line">    if (!isPlainObject(action)) &#123;</span><br><span class="line">      throw new Error(</span><br><span class="line">        &apos;Actions must be plain objects. &apos; +</span><br><span class="line">          &apos;Use custom middleware for async actions.&apos;</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (typeof action.type === &apos;undefined&apos;) &#123;</span><br><span class="line">      throw new Error(</span><br><span class="line">        &apos;Actions may not have an undefined &quot;type&quot; property. &apos; +</span><br><span class="line">          &apos;Have you misspelled a constant?&apos;</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 调用dispatch的时候只能一个一个调用，通过isDispatching调用</span><br><span class="line">    if (isDispatching) &#123;</span><br><span class="line">      throw new Error(&apos;Reducers may not dispatch actions.&apos;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    try &#123;</span><br><span class="line">      isDispatching = true</span><br><span class="line">      currentState = currentReducer(currentState, action)</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">      isDispatching = false</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 每一次状态更新后，都需要调用listeners数组中的每一个监听函数</span><br><span class="line">    const listeners = (currentListeners = nextListeners)</span><br><span class="line">    for (let i = 0; i &lt; listeners.length; i++) &#123;</span><br><span class="line">      const listener = listeners[i]</span><br><span class="line">      listener()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return action</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * Replaces the reducer currently used by the store to calculate the state.</span><br><span class="line">   *</span><br><span class="line">   * 替换reducer，在代码分割、reducer动态加载、redux热部署</span><br><span class="line">   * You might need this if your app implements code splitting and you want to</span><br><span class="line">   * load some of the reducers dynamically. You might also need this if you</span><br><span class="line">   * implement a hot reloading mechanism for Redux.</span><br><span class="line">   *</span><br><span class="line">   * @param &#123;Function&#125; nextReducer The reducer for the store to use instead.</span><br><span class="line">   * @returns &#123;void&#125;</span><br><span class="line">   */</span><br><span class="line">  function replaceReducer(nextReducer) &#123;</span><br><span class="line">    if (typeof nextReducer !== &apos;function&apos;) &#123;</span><br><span class="line">      throw new Error(&apos;Expected the nextReducer to be a function.&apos;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    currentReducer = nextReducer</span><br><span class="line"></span><br><span class="line">    // This action has a similiar effect to ActionTypes.INIT.</span><br><span class="line">    // Any reducers that existed in both the new and old rootReducer</span><br><span class="line">    // will receive the previous state. This effectively populates</span><br><span class="line">    // the new state tree with any relevant data from the old one.</span><br><span class="line">    dispatch(&#123; type: ActionTypes.REPLACE &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * 为了兼容一些observable/reactive的库</span><br><span class="line">   * Interoperability point for observable/reactive libraries.</span><br><span class="line">   * @returns &#123;observable&#125; A minimal observable of state changes.</span><br><span class="line">   * For more information, see the observable proposal:</span><br><span class="line">   * https://github.com/tc39/proposal-observable</span><br><span class="line">   */</span><br><span class="line">  function observable() &#123;</span><br><span class="line">    const outerSubscribe = subscribe</span><br><span class="line">    return &#123;</span><br><span class="line">      /**</span><br><span class="line">       * The minimal observable subscription method.</span><br><span class="line">       * @param &#123;Object&#125; observer Any object that can be used as an observer.</span><br><span class="line">       * The observer object should have a `next` method.</span><br><span class="line">       * @returns &#123;subscription&#125; An object with an `unsubscribe` method that can</span><br><span class="line">       * be used to unsubscribe the observable from the store, and prevent further</span><br><span class="line">       * emission of values from the observable.</span><br><span class="line">       */</span><br><span class="line">      subscribe(observer) &#123;</span><br><span class="line">        if (typeof observer !== &apos;object&apos; || observer === null) &#123;</span><br><span class="line">          throw new TypeError(&apos;Expected the observer to be an object.&apos;)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        function observeState() &#123;</span><br><span class="line">          if (observer.next) &#123;</span><br><span class="line">            observer.next(getState())</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        observeState()</span><br><span class="line">        const unsubscribe = outerSubscribe(observeState)</span><br><span class="line">        return &#123; unsubscribe &#125;</span><br><span class="line">      &#125;,</span><br><span class="line"></span><br><span class="line">      [$$observable]() &#123;</span><br><span class="line">        return this</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  // When a store is created, an &quot;INIT&quot; action is dispatched so that every</span><br><span class="line">  // reducer returns their initial state. This effectively populates</span><br><span class="line">  // the initial state tree.</span><br><span class="line">  /**</span><br><span class="line">   * 实际应用中，createStore被调用后，Redux就会设置一个初始的空状态</span><br><span class="line">   */</span><br><span class="line">  dispatch(&#123; type: ActionTypes.INIT &#125;)</span><br><span class="line"></span><br><span class="line">  return &#123;</span><br><span class="line">    dispatch, // 派发Action</span><br><span class="line">    subscribe, // 订阅页面数据状态，即store中state的变化</span><br><span class="line">    getState, // 获取当前页面状态数据树，即store中state的变化</span><br><span class="line">    replaceReducer, // 一般开发用不到，热更新/代码分离使用</span><br><span class="line">    [$$observable]: observable</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h3><p>1、</p><p style="text-align: left"><a href="https://github.com/ecmadao/Coding-Guide/blob/master/Notes/React/Redux/Redux%E5%85%A5%E5%9D%91%E8%BF%9B%E9%98%B6-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90.md#createstore" target="_blank" rel="noopener">https://github.com/ecmadao/Coding-Guide/blob/master/Notes/React/Redux/Redux%E5%85%A5%E5%9D%91%E8%BF%9B%E9%98%B6-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90.md#createstore</a></p><p></p>
+<p>2、《React 状态管理与同构实战》</p>
+<p style="text-align: center;"><span style="font-size:18px;"><strong><span style="color:#ff00;"><span style="color:#ff0000;">友情提示：</span></span>请尊重作者劳动成果，如需转载本博客文章请注明出处！谢谢合作！</strong></span></p>
+
+<p align="center"><strong><span style="font-size:18px;">【作者：吴林&nbsp;&nbsp;</span></strong><a target="_blank" href="https://super-lin0.github.io/"><strong><span style="font-size:18px;">https://super-lin0.github.io/</span></strong></a><strong>】</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redux/" rel="tag"># Redux</a>
+          
+            <a href="/tags/Source-code-analysis/" rel="tag"># Source code analysis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/17/Git操作指南/" rel="next" title="Git团队协作规范">
+                <i class="fa fa-chevron-left"></i> Git团队协作规范
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Wu.lin</p>
+              <p class="site-description motion-element" itemprop="description">路漫漫其修远兮，吾将上下而求索</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用方法"><span class="nav-number">1.</span> <span class="nav-text">使用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码解读"><span class="nav-number">2.</span> <span class="nav-text">源码解读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献："><span class="nav-number">3.</span> <span class="nav-text">参考文献：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wu.lin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
