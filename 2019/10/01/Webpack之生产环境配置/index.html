@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="javascript,Webpack,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文总结了 Webpack 在生产环境配置中一些需要注意的地方      标签：#javascript, #Webpack">
+<meta name="keywords" content="javascript,Webpack">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Webpack之生产环境配置">
+<meta property="og:url" content="http://yoursite.com/2019/10/01/Webpack之生产环境配置/index.html">
+<meta property="og:site_name" content="吴林的博客">
+<meta property="og:description" content="本文总结了 Webpack 在生产环境配置中一些需要注意的地方      标签：#javascript, #Webpack">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191001165658.png">
+<meta property="og:updated_time" content="2019-10-01T11:16:06.495Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Webpack之生产环境配置">
+<meta name="twitter:description" content="本文总结了 Webpack 在生产环境配置中一些需要注意的地方      标签：#javascript, #Webpack">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191001165658.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/01/Webpack之生产环境配置/">
+
+
+
+
+
+  <title>Webpack之生产环境配置 | 吴林的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">吴林的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/01/Webpack之生产环境配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wu.lin">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="吴林的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Webpack之生产环境配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-01T19:09:15+08:00">
+                2019-10-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <center>
+  本文总结了 Webpack 在生产环境配置中一些需要注意的地方
+<center>
+<br>
+</center>
+  标签：#javascript, #Webpack
+</center>
+
+<a id="more"></a>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在生产环境（线上环境），资源打包将会遇到很多新的问题。本文将会包含以下内容</p>
+<ul>
+<li><p>环境变量的使用</p>
+</li>
+<li><p>source map 机制与策略</p>
+</li>
+<li><p>资源压缩</p>
+</li>
+<li><p>优化 hash 与缓存</p>
+</li>
+<li><p>动态 HTML</p>
+</li>
+</ul>
+<h2 id="环境配置的封装"><a href="#环境配置的封装" class="headerlink" title="环境配置的封装"></a>环境配置的封装</h2><h3 id="使用相同的配置文件"><a href="#使用相同的配置文件" class="headerlink" title="使用相同的配置文件"></a>使用相同的配置文件</h3><p>Webpack 不管在什么环境下打包都使用 webpack.config.js,只是在构建开始前将当前所属环境作为一个变量传进去，然后在 webpack.config.js 中通过各种判断条件来决定使用哪个配置条件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// package.json</span><br><span class="line">&#123;</span><br><span class="line">  &quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;build&quot;: &quot;ENV=production webpack&quot;,</span><br><span class="line">    &quot;start&quot;: &quot;ENV=production webpack-dev-server --open-page \&quot;dist/index.html\&quot;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// webpack.config.js</span><br><span class="line">const ENV = process.env.ENV;</span><br><span class="line">const isProd = ENV === &quot;production&quot;;</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  mode: ENV,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: isProd ? &quot;bundle@[chunkhash].js&quot; : &quot;bundle.js&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="为不同环境创建各自的配置文件"><a href="#为不同环境创建各自的配置文件" class="headerlink" title="为不同环境创建各自的配置文件"></a>为不同环境创建各自的配置文件</h3><p>例如，生产环境配置文件名叫 webpack.production.config.js，开发环境配置文件名可叫做 webpack.development.config.js。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// package.json</span><br><span class="line">&#123;</span><br><span class="line">  &quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;build&quot;: &quot;webpack --config=webpack.production.config.js&quot;,</span><br><span class="line">    &quot;start&quot;: &quot;webpack-dev-server --config=webpack.production.config.js&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Note</strong></p>
+<p>开发环境和生产环境配置重复的部分可以提取出来，创建文件 webpack.common.config.js</p>
+<h2 id="开启-production-模式"><a href="#开启-production-模式" class="headerlink" title="开启 production 模式"></a>开启 production 模式</h2><p>webpack 4 中直接加了一个 mode 配置项，让开发者可以通过它来直接切换打包模式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// webpack.config.js</span><br><span class="line">module.exports = &#123;</span><br><span class="line">  mode: &quot;production&quot;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// wepack.config.js</span><br><span class="line">module.exports = &#123;</span><br><span class="line">  mode: &quot;production&quot;,</span><br><span class="line">  plugins: [</span><br><span class="line">    new webpack.DefinePlugin(&#123;</span><br><span class="line">      ENV: JSON.stringify(&quot;production&quot;),</span><br><span class="line">      IS_PROD: true,</span><br><span class="line">      ENV_ID: 130912098,</span><br><span class="line">    &#125;),</span><br><span class="line">  ],</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// index.js</span><br><span class="line">document.write(&quot;ENV::&quot; + ENV);</span><br></pre></td></tr></table></figure>
+
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/define-plugin" target="_blank" rel="noopener">define plugin</a></p>
+<h2 id="source-map"><a href="#source-map" class="headerlink" title="source map"></a>source map</h2><p>source map 指的是将编译、打包、压缩后的代码映射回源代码的过程。Webpack 打包压缩后的代码可读性较差，因此基本不能调试，source map + 调试工具(dev tools)正好可以解决这个问题。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>Webpack 对于工程源代码的每一步处理都有可能会改变代码的位置、结构，甚至是所处文件，因此每一步都需要生成对应的 source map。若我们启用了 devtool 配置项，source map 就会跟随源代码一步步被传递，直到生成最后的 map 文件。这个文件默认就是打包后的文件名加上.map，如 bundle.js.map。</p>
+<p><strong>Note</strong></p>
+<ul>
+<li>生成 mapping 文件的同时，bundle 文件中会追加上一句注释来标识 map 文件的位置。当我们打开浏览器开发者工具时，map 文件会同时被加载，这时浏览器会使用它来对打包后的 bundle 文件进行解析，分析出源代码的目录结构和内容。</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191001165658.png" alt></p>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  devtool: &quot;source-map&quot;,</span><br><span class="line">  module: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: /\.less/,</span><br><span class="line">        use: [</span><br><span class="line">          &quot;style-loader&quot;,</span><br><span class="line">          &#123;</span><br><span class="line">            loader: &quot;css-loader&quot;,</span><br><span class="line">            options: &#123;</span><br><span class="line">              sourceMap: true</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            loader: &quot;less-loader&quot;,</span><br><span class="line">            options: &#123;</span><br><span class="line">              sourceMap: true</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/source-map" target="_blank" rel="noopener">Source map</a></p>
+<h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><p>有了 source map 也就意味着任何人通过浏览器的开发者工具都可以看到工程源码，对于安全性来说是极大的隐患。Webpack 提供了 hidden-source-map 及 nosources-source-map 两种策略来提升 source map 的安全性。</p>
+<p><strong>hidden-source-map</strong></p>
+<p>hidden-source-map 意味着 Webpack 任然会产出完整的 map 文件，只不过不会在 bundle 文件中添加对于 map 文件的引用。这样一来，当打开浏览器开发者工具时，我们看不到 map 文件，浏览器自然也无法对 bundle 进行解析。如果想要追溯源码，需要利用一些第三方服务，例如 Sentry。</p>
+<p><strong>nosource-source-map</strong></p>
+<p>打包部署之后，我们可以在浏览器开发者工具的 Sources 选项卡中看到源码的目录结构，但是文件的具体内容会被隐藏起来。对于错误来说，仍可以在 Console 控制台中查看源代码的错误栈以及日志的准确行数</p>
+<p><strong>Ngnix 配置</strong></p>
+<p>正常打包出 source map，然后通过服务器的 Ngnix 配置（或其他类似工具）将 .map 文件只对固定白名单（比如公司内网）开放。</p>
+<h2 id="资源压缩"><a href="#资源压缩" class="headerlink" title="资源压缩"></a>资源压缩</h2><p>在将资源发不到线上环境钱，我们通常需要对代码进行压缩，即将多余的空格、换行及执行不到的代码，缩短变量名，在执行结果不变的前提下将代码替换为更短的形式。</p>
+<h3 id="压缩-JavaScript"><a href="#压缩-JavaScript" class="headerlink" title="压缩 JavaScript"></a>压缩 JavaScript</h3><p>Webpack4 集成 terser</p>
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/teser-plugin" target="_blank" rel="noopener">Terser plugin demo</a></p>
+<h3 id="压缩-CSS"><a href="#压缩-CSS" class="headerlink" title="压缩 CSS"></a>压缩 CSS</h3><p>压缩 CSS 文件的前提是使用 extract-text-webpack-plugin 或 mini-css-extract-plugin 将样式提取出来，接着使用 optimize-css-assets-webpack-plugin 来进行压缩，这个插件本质上使用的是压缩器 cssnano。</p>
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/minification-css" target="_blank" rel="noopener">CSS 压缩</a></p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>缓存是指重复利用浏览器已经获取过的资源。合理地使用缓存是提升客户端性能的一个关键因素。具体的缓存策略由服务器来决定，浏览器会在资源国旗前一直使用本地缓存进行响应。</p>
+<h3 id="资源-hash"><a href="#资源-hash" class="headerlink" title="资源 hash"></a>资源 hash</h3><p>在每次打包的过程中对资源的内容计算一次 hash，并作为版本号存放在文件名中，如 <a href="mailto:bundle@c58f651eb71ab3bbcd01.js" target="_blank" rel="noopener">bundle@c58f651eb71ab3bbcd01.js</a>。</p>
+<ul>
+<li>用 chunkhash 来作为文件版本号，它会为每一个 chunk 单独计算一个 hash。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">module.exports = &#123;</span><br><span class="line">  entry: &quot;./src/index.js&quot;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: &quot;bundle@[chunkhash].js&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/cache" target="_blank" rel="noopener">chunkhash</a></p>
+<h3 id="输出动态-HTML"><a href="#输出动态-HTML" class="headerlink" title="输出动态 HTML"></a>输出动态 HTML</h3><p>资源名改变之后意味着 HTML 中的引用路径的改变。每次更改后都要手动的去维护是很麻烦的，因此，最理想的情况是搭载打包结束后自动把最新的资源名同步过去。使用 html-webpack-plugin 可以帮我们做到这一点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// webpack.config.js</span><br><span class="line">const htmlPlugin = require(&quot;html-webpack-plugin&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  plugins: [new htmlPlugin(&#123; title: path.basename(__dirname) &#125;)],</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/cache" target="_blank" rel="noopener">动态输出 HTML</a></p>
+<h2 id="bundle-体积监控和分析"><a href="#bundle-体积监控和分析" class="headerlink" title="bundle 体积监控和分析"></a>bundle 体积监控和分析</h2><p>VS Code 插件：Import Cost</p>
+<p>工具：webpack-bundle-analyzer</p>
+<p>自动化资源监控工具：bundlesize</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本文了解了在生产环境下需要进行的一些特殊的配置。</p>
+<p>开发环境中我们关注的可能是开发速度，而在生产环境中我们关注的则是输出的资源体积以及如何优化客户端缓存来缩短页面渲染时间。我们介绍了设置生产环境变量、压缩代码、监控资源体积等方法。缓存的控制住要依赖于从 chunk 内容生成 hash 作为版本号，并添加到资源文件名中，使资源更新后可以立即被客户端获取到。</p>
+<p>source map 对于追溯线上问题十分重要，但也存在安全隐患。通过一些特殊的 source map 配置以及第三方服务，我们可以兼顾两者。</p>
+<p>Webpack 4 提供了”mode: ‘production’”的配置项，通过它可以节省很多生产环境下的特定代码，让配置文件更加的简洁</p>
+<h3 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h3><p>1、《Webpack 实战入门、进阶与调优）》- 居玉皓</p>
+<p style="text-align: center;"><span style="font-size:18px;"><strong><span style="color:#ff00;"><span style="color:#ff0000;">友情提示：</span></span>请尊重作者劳动成果，如需转载本博客文章请注明出处！谢谢合作！</strong></span></p>
+
+<p align="center"><strong><span style="font-size:18px;">【作者：吴林&nbsp;&nbsp;</span></strong><a target="_blank" href="https://super-lin0.github.io/"><strong><span style="font-size:18px;">https://super-lin0.github.io/</span></strong></a><strong>】</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag"># javascript</a>
+          
+            <a href="/tags/Webpack/" rel="tag"># Webpack</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/30/Webpack之代码分片/" rel="next" title="Webpack之代码分片">
+                <i class="fa fa-chevron-left"></i> Webpack之代码分片
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Wu.lin</p>
+              <p class="site-description motion-element" itemprop="description">路漫漫其修远兮，吾将上下而求索</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境配置的封装"><span class="nav-number">2.</span> <span class="nav-text">环境配置的封装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用相同的配置文件"><span class="nav-number">2.1.</span> <span class="nav-text">使用相同的配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为不同环境创建各自的配置文件"><span class="nav-number">2.2.</span> <span class="nav-text">为不同环境创建各自的配置文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开启-production-模式"><span class="nav-number">3.</span> <span class="nav-text">开启 production 模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境变量"><span class="nav-number">4.</span> <span class="nav-text">环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#source-map"><span class="nav-number">5.</span> <span class="nav-text">source map</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">5.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置"><span class="nav-number">5.2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安全"><span class="nav-number">5.3.</span> <span class="nav-text">安全</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#资源压缩"><span class="nav-number">6.</span> <span class="nav-text">资源压缩</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#压缩-JavaScript"><span class="nav-number">6.1.</span> <span class="nav-text">压缩 JavaScript</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#压缩-CSS"><span class="nav-number">6.2.</span> <span class="nav-text">压缩 CSS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">7.</span> <span class="nav-text">缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#资源-hash"><span class="nav-number">7.1.</span> <span class="nav-text">资源 hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出动态-HTML"><span class="nav-number">7.2.</span> <span class="nav-text">输出动态 HTML</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bundle-体积监控和分析"><span class="nav-number">8.</span> <span class="nav-text">bundle 体积监控和分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">9.</span> <span class="nav-text">小结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献："><span class="nav-number">9.1.</span> <span class="nav-text">参考文献：</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wu.lin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
