@@ -88,7 +88,7 @@
 <meta property="og:description" content="本文总结了 Webpack 在生产环境配置中一些需要注意的地方      标签：#javascript, #Webpack">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191001165658.png">
-<meta property="og:updated_time" content="2019-10-02T01:13:45.752Z">
+<meta property="og:updated_time" content="2019-10-02T01:15:22.193Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Webpack之生产环境配置">
 <meta name="twitter:description" content="本文总结了 Webpack 在生产环境配置中一些需要注意的地方      标签：#javascript, #Webpack">
@@ -384,7 +384,7 @@
 
 <p><strong>完整示例</strong></p>
 <p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/cache" target="_blank" rel="noopener">chunkhash</a></p>
-<h3 id="输出动态-HTML"><a href="#输出动态-HTML" class="headerlink" title="输出动态 HTML"></a>输出动态 HTML</h3><p>资源名改变之后意味着 HTML 中的引用路径的改变。每次更改后都要手动的去维护是很麻烦的，因此，最理想的情况是搭载打包结束后自动把最新的资源名同步过去。使用 html-webpack-plugin 可以帮我们做到这一点。</p>
+<h3 id="输出动态-HTML"><a href="#输出动态-HTML" class="headerlink" title="输出动态 HTML"></a>输出动态 HTML</h3><p>资源名改变之后意味着 HTML 中的引用路径的改变。每次更改后都要手动的去维护是很麻烦的，因此，最理想的情况是在打包结束后自动把最新的资源名同步过去。使用 html-webpack-plugin 可以帮我们做到这一点。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// webpack.config.js</span><br><span class="line">const htmlPlugin = require(&quot;html-webpack-plugin&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  plugins: [new htmlPlugin(&#123; title: path.basename(__dirname) &#125;)],</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p><strong>完整示例</strong></p>
