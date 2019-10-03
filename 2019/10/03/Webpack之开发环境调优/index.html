@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="javascript,Webpack,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文主要介绍了一些对日常开发有一定帮助的 Webpack 插件以及调试方法      标签：#javascript, #Webpack">
+<meta name="keywords" content="javascript,Webpack">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Webpack之开发环境调优">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/Webpack之开发环境调优/index.html">
+<meta property="og:site_name" content="吴林的博客">
+<meta property="og:description" content="本文主要介绍了一些对日常开发有一定帮助的 Webpack 插件以及调试方法      标签：#javascript, #Webpack">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003144918.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003105248.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003114051.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003115149.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003142942.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143511.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143557.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143738.png">
+<meta property="og:updated_time" content="2019-10-03T07:02:08.988Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Webpack之开发环境调优">
+<meta name="twitter:description" content="本文主要介绍了一些对日常开发有一定帮助的 Webpack 插件以及调试方法      标签：#javascript, #Webpack">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003144918.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/03/Webpack之开发环境调优/">
+
+
+
+
+
+  <title>Webpack之开发环境调优 | 吴林的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">吴林的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/Webpack之开发环境调优/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wu.lin">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="吴林的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Webpack之开发环境调优</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-03T14:57:26+08:00">
+                2019-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <center>
+  本文主要介绍了一些对日常开发有一定帮助的 Webpack 插件以及调试方法
+<center>
+<br>
+</center>
+  标签：#javascript, #Webpack
+</center>
+
+<a id="more"></a>
+
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003144918.png" alt></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Webpack 作为打包工具的重要使命之一就是提升效率。本文我们将介绍一些对日常开发有一定帮助的 Webpack 插件及调试方法。本文内容包括：</p>
+<ul>
+<li><p>Webpack 周边插件介绍</p>
+</li>
+<li><p>模块热替换及其原理</p>
+</li>
+</ul>
+<h2 id="Webpack-开发效率插件"><a href="#Webpack-开发效率插件" class="headerlink" title="Webpack 开发效率插件"></a>Webpack 开发效率插件</h2><p>Webpack 拥有非常强大的生态系统，社区中相关的工具也是数不胜数。这里我们介绍几个使用比较广泛的 Webpack 插件，可以从不同的方面对 Webpack 的能力进行增强。</p>
+<h3 id="webpack-dashboard"><a href="#webpack-dashboard" class="headerlink" title="webpack-dashboard"></a>webpack-dashboard</h3><p>Webpack 每一次构建结束后都会在控制台输出一些打包相关的信息日志，但是这些日志是以列表形式呈现的，有时会显得不够直观。Webpack-dashboard 则是以更好的方式来展示这些信息的。先来看一下最终效果。</p>
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003105248.png" alt></p>
+<p><strong>安装</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add webpack-dashboard --dev</span><br></pre></td></tr></table></figure>
+
+<p><strong>webpack 配置</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// webpack.config.js</span><br><span class="line">const DashboardPlugin = require(&quot;webpack-dashboard/plugin&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  context: path.join(__dirname, &quot;./src&quot;),</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &quot;./index.js&quot;,</span><br><span class="line">    util: &quot;./util.js&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: &quot;[name].js&quot;,</span><br><span class="line">    publicPath: &quot;./dist/&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [</span><br><span class="line">    new htmlPlugin(&#123;</span><br><span class="line">      title: path.basename(__dirname)</span><br><span class="line">    &#125;),</span><br><span class="line">    new DashboardPlugin()</span><br><span class="line">  ],</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改启动方式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//package.json</span><br><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">  &quot;build&quot;: &quot;webpack&quot;,</span><br><span class="line">  &quot;start&quot;: &quot;webpack-dashboard -- webpack-dev-server --open-page \&quot;./index.html\&quot;&quot;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/webpack-dashboard" target="_blank" rel="noopener">webpack-dashboard</a></p>
+<h3 id="webpack-merge"><a href="#webpack-merge" class="headerlink" title="webpack-merge"></a>webpack-merge</h3><p>顾名思义，我们猜测这个插件是用来合并 Webpack 配置的。先来看看用法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// webpack.common.config.js</span><br><span class="line">const path = require(&quot;path&quot;);</span><br><span class="line">const HtmlPlugin = require(&quot;html-webpack-plugin&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  entry: &quot;./src/index.js&quot;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: &quot;[name].js&quot;,</span><br><span class="line">    publicPath: &quot;/dist/&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  mode: &quot;development&quot;,</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    port: 3000,</span><br><span class="line">    publicPath: &quot;/dist/&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [new HtmlPlugin(&#123; title: path.basename(__dirname) &#125;)],</span><br><span class="line">  module: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: /\.(png|jpg|gif)$/,</span><br><span class="line">        use: &quot;file-loader&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        test: /.css$/,</span><br><span class="line">        use: [&quot;style-loader&quot;, &quot;css-loader&quot;]</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// webpack.prod.config.js</span><br><span class="line"></span><br><span class="line">const merge = require(&quot;webpack-merge&quot;);</span><br><span class="line">const commonCfg = require(&quot;./webpack.common.config&quot;);</span><br><span class="line">const ExtractTextPlugin = require(&quot;extract-text-webpack-plugin&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = merge.smart(commonCfg, &#123;</span><br><span class="line">  mode: &quot;production&quot;,</span><br><span class="line">  module: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: /\.css$/,</span><br><span class="line">        use: ExtractTextPlugin.extract(&#123;</span><br><span class="line">          fallback: &quot;style-loader&quot;,</span><br><span class="line">          use: &quot;css-loader&quot;</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>是具体使用过程当中，我们会发现它在合并 module.rules 的过程中会以 test 属性作为标识符，当发现有相同项出现的时候会以后面的规则覆盖前面的规则。</p>
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/webpack-merge" target="_blank" rel="noopener">webpack-merge</a></p>
+<h3 id="speed-measure-webpack-plugin"><a href="#speed-measure-webpack-plugin" class="headerlink" title="speed-measure-webpack-plugin"></a>speed-measure-webpack-plugin</h3><p>可以分析出 Webpack 整个打包过程中在各个 loader 和 pulgin 上耗费的时间，这将有助于找出构建过程中的性能瓶颈。</p>
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003114051.png" alt></p>
+<p><strong>使用方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// webpack.config.js</span><br><span class="line"></span><br><span class="line">const path = require(&quot;path&quot;);</span><br><span class="line">const HtmlPlugin = require(&quot;html-webpack-plugin&quot;);</span><br><span class="line">const SpeedMeasurePlugin = require(&quot;speed-measure-webpack-plugin&quot;);</span><br><span class="line"></span><br><span class="line">const smp = new SpeedMeasurePlugin();</span><br><span class="line"></span><br><span class="line">module.exports = smp.wrap(&#123;</span><br><span class="line">  entry: &quot;./src/index.js&quot;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: &quot;[name].js&quot;,</span><br><span class="line">    publicPath: &quot;/dist/&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  mode: &quot;development&quot;,</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    port: 3000,</span><br><span class="line">    publicPath: &quot;/dist/&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [new HtmlPlugin(&#123; title: path.basename(__dirname) &#125;)]</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/speed-measure-webpack-plugin" target="_blank" rel="noopener">speed-measure-webpack-plugin</a></p>
+<h3 id="size-plugin"><a href="#size-plugin" class="headerlink" title="size-plugin"></a>size-plugin</h3><p>可以帮我们监控资源体积的变化，尽早发现问题</p>
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003115149.png" alt></p>
+<p><strong>使用方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">const path = require(&quot;path&quot;);</span><br><span class="line">const HtmlPlugin = require(&quot;html-webpack-plugin&quot;);</span><br><span class="line">const SizePlugin = require(&quot;size-plugin&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  entry: &quot;./src/index.js&quot;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: &quot;[name].js&quot;,</span><br><span class="line">    publicPath: &quot;/dist/&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  mode: &quot;development&quot;,</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    port: 3000,</span><br><span class="line">    publicPath: &quot;/dist/&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [</span><br><span class="line">    new HtmlPlugin(&#123; title: path.basename(__dirname) &#125;),</span><br><span class="line">    new SizePlugin()</span><br><span class="line">  ]</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/size-plugin" target="_blank" rel="noopener">size-plugin</a></p>
+<h2 id="模块热替换（HMR）"><a href="#模块热替换（HMR）" class="headerlink" title="模块热替换（HMR）"></a>模块热替换（HMR）</h2><p>Webpack 可以让代码在网页不刷新的前提下得到最新的改动，我们甚至不需要重新发起请求就能够看到更新后的效果，这就是模块热替换功能（Hot Module Replacement, HMR）。适合大型应用，HMR 可以在保留页面当前状态的前提下呈现出最新的改动，可以节省开发者大量的时间成本。</p>
+<h3 id="开启-HMR"><a href="#开启-HMR" class="headerlink" title="开启 HMR"></a>开启 HMR</h3><ul>
+<li>项目必须基于 webpack-dev-server 或 webpack-dev-middle 进行开发的</li>
+</ul>
+<p><strong>手动调用 HMR API</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// webpack.config.js</span><br><span class="line">const path = require(&quot;path&quot;);</span><br><span class="line">const htmlPlugin = require(&quot;html-webpack-plugin&quot;);</span><br><span class="line">const webpack = require(&quot;webpack&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  plugins: [</span><br><span class="line">    //  将会为每个模块绑定一个module.hot对象，这个对象包含了 HMR 的 API</span><br><span class="line">    new webpack.HotModuleReplacementPlugin()</span><br><span class="line">  ],</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    hot: true,</span><br><span class="line">    port: 3000</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// index.js</span><br><span class="line"></span><br><span class="line">import &#123;add&#125; from &quot;util.js&quot;;</span><br><span class="line">add(2, 3);</span><br><span class="line"></span><br><span class="line">if(module.hot) &#123;</span><br><span class="line">  module.hot.accept();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>借助第三方现成工具</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">const path = require(&quot;path&quot;);</span><br><span class="line">const htmlPlugin = require(&quot;html-webpack-plugin&quot;);</span><br><span class="line">const webpack = require(&quot;webpack&quot;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  module: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: /\.js$/,</span><br><span class="line">        exclude: /node_modules/,</span><br><span class="line">        loader: &quot;babel-loader&quot;,</span><br><span class="line">        options: &#123;</span><br><span class="line">          presets: [&quot;react&quot;],</span><br><span class="line">          plugins: [&quot;react-hot-loader/babel&quot;]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [</span><br><span class="line">    new webpack.HotModuleReplacementPlugin()</span><br><span class="line">  ],</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    hot: true,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// index.js</span><br><span class="line">import React, &#123; Component &#125; from &quot;react&quot;;</span><br><span class="line">import ReactDOM from &quot;react-dom&quot;;</span><br><span class="line">import &#123; hot &#125; from &quot;react-hot-loader&quot;;</span><br><span class="line"></span><br><span class="line">class App extends Component &#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    return &lt;div&gt;Hello World&lt;/div&gt;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const AppComponent = hot(module)(App);</span><br><span class="line"></span><br><span class="line">const render = () =&gt;</span><br><span class="line">  ReactDOM.render(&lt;AppComponent /&gt;, document.getElementById(&quot;app&quot;));</span><br><span class="line"></span><br><span class="line">render();</span><br></pre></td></tr></table></figure>
+
+<p><strong>完整示例</strong></p>
+<p><a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/hmr-react" target="_blank" rel="noopener">hmr</a></p>
+<h3 id="HMR-原理"><a href="#HMR-原理" class="headerlink" title="HMR 原理"></a>HMR 原理</h3><p><strong>定义</strong></p>
+<ul>
+<li><p>客户端： 浏览器</p>
+</li>
+<li><p>服务器端：webpack-dev-server(WDS)</p>
+</li>
+</ul>
+<p><strong>核心</strong></p>
+<p>HMR 的核心就是客户端从服务器端拉取更新后的资源（准确地说，HMR 拉取的不是整个资源文件，而是 chunk diff,即 chunk 需要更新的部分）</p>
+<p><strong>步骤</strong></p>
+<ul>
+<li>浏览器什么时候去拉取这些更新</li>
+</ul>
+<p>WDS 与浏览器之间维护了一个 websocket，当本地资源发生变化时 WDS 会向浏览器推送更新事件，并带上这次构建的 hash，让客户端与上一次资源进行对比。通过 hash 的比对可以防止冗余更新的出现。</p>
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003142942.png" alt></p>
+<ul>
+<li>去拉取什么</li>
+</ul>
+<p>有了恰当的拉取资源的时机，下一步就是要知道拉取什么。这部分信息并没有包含在刚才的 websocket 中，因为我们刚才只是想知道这次构建的结果是不是和上一次一样。</p>
+<p>现在客户端已经知道了新的构建结果和当前的有了差别，就会向 WDS 发起一个请求来获取更改文件的列表，即哪些模块有了改动。返回的结果告诉客户端，需要更新的模块为 app，这样客户端就可以再借助这些信息继续向 WDS 获取该 chunk 的增量更新了。</p>
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143511.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143557.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143738.png" alt></p>
+<ul>
+<li><p>获取到增量更新之后的处理</p>
+<p>Webpack 提供了相关的 API 或使用 react-hot-loader 和 vue-loader 这样的第三方 API 来处理客户端获取到增量更新之后的事。</p>
+</li>
+</ul>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本文介绍了一些 Webpack 周边插件，以及如何使用 HMR 以及 HMR 原理。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>1、《Webpack 实战入门、进阶与调优）》- 居玉皓</p>
+<p>2、<a href="https://www.npmjs.com/package/webpack-dashboard" target="_blank" rel="noopener">webpack-dashboard</a></p>
+<p>3、<a href="https://www.webpackjs.com/api/hot-module-replacement/" target="_blank" rel="noopener">模块热替换</a></p>
+<p style="text-align: center;"><span style="font-size:18px;"><strong><span style="color:#ff00;"><span style="color:#ff0000;">友情提示：</span></span>请尊重作者劳动成果，如需转载本博客文章请注明出处！谢谢合作！</strong></span></p>
+
+<p align="center"><strong><span style="font-size:18px;">【作者：吴林&nbsp;&nbsp;</span></strong><a target="_blank" href="https://super-lin0.github.io/"><strong><span style="font-size:18px;">https://super-lin0.github.io/</span></strong></a><strong>】</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag"># javascript</a>
+          
+            <a href="/tags/Webpack/" rel="tag"># Webpack</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/02/Webpack之打包优化/" rel="next" title="Webpack之打包优化">
+                <i class="fa fa-chevron-left"></i> Webpack之打包优化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Wu.lin</p>
+              <p class="site-description motion-element" itemprop="description">路漫漫其修远兮，吾将上下而求索</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Webpack-开发效率插件"><span class="nav-number">2.</span> <span class="nav-text">Webpack 开发效率插件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#webpack-dashboard"><span class="nav-number">2.1.</span> <span class="nav-text">webpack-dashboard</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#webpack-merge"><span class="nav-number">2.2.</span> <span class="nav-text">webpack-merge</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#speed-measure-webpack-plugin"><span class="nav-number">2.3.</span> <span class="nav-text">speed-measure-webpack-plugin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#size-plugin"><span class="nav-number">2.4.</span> <span class="nav-text">size-plugin</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模块热替换（HMR）"><span class="nav-number">3.</span> <span class="nav-text">模块热替换（HMR）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开启-HMR"><span class="nav-number">3.1.</span> <span class="nav-text">开启 HMR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HMR-原理"><span class="nav-number">3.2.</span> <span class="nav-text">HMR 原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">5.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wu.lin</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
